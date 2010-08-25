@@ -1,0 +1,63 @@
+   Examples
+   --------
+
+   Something like XPath, we use dotted expressions to pull out
+   specific configuration values.
+
+   The path expression have a particular syntax:
+
+   - YAML hashes are accessed using the '.' syntax, so 
+     ---
+     this:
+        goes: here
+     ---
+     would access the value 'here' with the expression 'this.goes'.
+
+     If the key itself has '.' characters, wrap the key in '|'s, so
+     ---
+     this.is.complex:
+        goes: here
+     ---
+     would access the value 'here' with the expression 
+     '|this.is.complex|.goes'
+
+   - Array values can be specified by index so
+     ---
+     this:
+        - is a list
+        - of values
+     ---
+     would access the 2nd array value 'of values' with the 
+     expression 'this[1]'
+
+   - If you want all of the values in a list, each value on a
+     separate line,
+     ---
+     this:
+        - name: joe
+          age: 32
+        - name: jack
+          age: 10
+     ---
+     would access all of ages could be accessed by 'this[].age'
+     and would return:
+
+     32
+     10
+
+   - If you want all the keys in a hash, each key on a 
+     separate line,
+     ---
+     this:
+        host1:
+           value: blip
+        host2:
+           value: bloom
+        host3:
+           value: blam
+     ---
+     you would access 'host[1-3]' with the expression 'this'.
+
+   Missing elements output nothing.  Malformed path expressions
+   print an error and exit 1.
+
