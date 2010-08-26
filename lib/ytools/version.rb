@@ -1,6 +1,6 @@
 require 'scanf'
 
-module CTool
+module YTools
   class Version
     CURRENT = File.read(File.dirname(__FILE__) + '/../VERSION')
     MAJOR, MINOR, TINY = CURRENT.scanf('%d.%d.%d')

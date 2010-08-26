@@ -5,7 +5,7 @@ require 'fileutils'
 require 'rake'
 require 'rubygems'
 require 'spec/rake/spectask'
-require 'ctool/version'
+require 'ytools/version'
 
 task :default => :spec
 
@@ -18,8 +18,8 @@ end
 
 desc "Deploys the gem to rubygems.org"
 task :gem => :release do
-  system("gem build ctool.gemspec")
-#  system("gem push ctool-#{CTool::Version.to_s}.gem")
+  system("gem build ytool.gemspec")
+#  system("gem push ytool-#{YTool::Version.to_s}.gem")
 end
 
 desc "Does the full release cycle."

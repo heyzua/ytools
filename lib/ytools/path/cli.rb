@@ -1,9 +1,9 @@
 require 'optparse'
 require 'yaml'
-require 'ctool/version'
-require 'ctool/errors'
+require 'ytools/version'
+require 'ytools/errors'
 
-module CTool::Tool
+module YTools::Path
 
   class CLI
     attr_reader :options, :args
@@ -21,7 +21,7 @@ module CTool::Tool
         
       rescue SystemExit => e
         raise
-      rescue CTool::ConfigurationError => e
+      rescue YTools::ConfigurationError => e
         print_error(e.message)
       rescue OptionParser::InvalidOption => e
         print_error(e.message)
@@ -90,16 +90,16 @@ EOF
 
     def validate(args)
       if options[:path].nil?
-        raise CTool::ConfigurationError.new("The path expression was empty.")
+        raise YTools::ConfigurationError.new("The path expression was empty.")
       end
       if args.length == 0
-        raise CTool::ConfigurationError.new("No YAML files given as arguments")
+        raise YTools::ConfigurationError.new("No YAML files given as arguments")
       end
 
       if options[:string]
         args.each do |arg|
           if !File.exists?(arg)
-            raise CTool::ConfigurationError.new("Non-existant YAML file: #{arg}")
+            raise YTools::ConfigurationError.new("Non-existant YAML file: #{arg}")
           end
         end
       end
@@ -107,8 +107,8 @@ EOF
 
     private
     def print_error(e)
-      STDERR.puts "#{File.basename($0)}: #{e}"
-      STDERR.puts "#{File.basename($0)}: Try '--help' for more information"
+      STDERR.puts "ERROR: #{File.basename($0)}: #{e}"
+      STDERR.puts "ERROR: #{File.basename($0)}: Try '--help' for more information"
       exit 1
     end
   end # CLI
