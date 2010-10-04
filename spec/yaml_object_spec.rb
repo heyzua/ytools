@@ -3,13 +3,6 @@ require 'ytools/yaml_object'
 require 'helpers'
 
 module YTools
-
-  module YamlObjectHelper
-    def yo(hash)
-      YamlObject.new(hash)
-    end
-  end
-
   describe "Yaml Object" do
     include YamlObjectHelper
 
@@ -45,8 +38,19 @@ module YTools
     end
 
     it "should format funky child path names correctly in paths." do
+      h = yo({'a' => {'b/c' => {'d' => 'e'}}})
+      h.a['b/c'].ypath.should eql("/a/|b/c|")
+    end
+
+    it "should format child paths with dots correctly." do
       h = yo({'a' => {'b.c' => {'d' => 'e'}}})
-      h.a.b_c.ypath.should eql("/a/@['b.c']")
+      h.a.b_c.ypath.should eql('/a/b.c')
+    end
+
+    it "should allow funky characters in paths but not method names" do
+      h = yo({'a' => {'@b' => {'c' => 'd'}}})
+      attempting { h.a.b }.should raise_error(YTools::PathError)
+      h.a['@b'].ypath.should eql('/a/|@b|')
     end
 
     it "should fail when a key is not present." do

@@ -18,7 +18,7 @@ end
 
 desc "Deploys the gem to rubygems.org"
 task :gem => :release do
-  system("gem build ytool.gemspec")
+  system("gem build ytools.gemspec")
 #  system("gem push ytool-#{YTool::Version.to_s}.gem")
 end
 

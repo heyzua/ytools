@@ -126,5 +126,9 @@ module YTools::YPath
     it "should succeed to parse multiple paths according to slashes" do
       check_path('/this/goes', 'goes', 3)
     end
+
+    it "should be able to parse numbers within and at the end of path parts" do
+      check_path('/to2be42', 'to2be42')
+    end
   end
 end
