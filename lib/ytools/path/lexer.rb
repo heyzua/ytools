@@ -1,17 +1,17 @@
 require 'ytools/errors'
 
-module YTools::YPath
+module YTools::Path
 
   Token = Struct.new(:path, :offset, :length, :type) do
     def value
       case type
         when :path_separator then '/'
-        when :path_part then path # We cheat and put in the actual value of the path part here, because we don't care about the offset
-        when :at then '@'
+        when :path_part then path # We cheat and put in the actual
+                                  # value of the path part here, 
+                                  # because we don't care about the offset
         when :lbrace then '['
         when :rbrace then ']'
         when :number then path[offset, length].to_i
-        when :string then path[offset, length]
         else raise YPath::PathError("Unrecognized token type!!!!")
       end
     end
@@ -23,10 +23,7 @@ module YTools::YPath
     def initialize(path)
       @path = path
       @offset = 0
-
-      if path[offset] != ?/ 
-        raise YTools::PathError.new("The path didn't start with a '/' character: #{path}")
-      end
+      @buffer = []
     end
 
     def [](index)
@@ -38,32 +35,41 @@ module YTools::YPath
     end
 
     def next
-      if offset >= path.length
-        return nil
+      if @buffer.length > 0
+         @buffer.pop
+      else
+        token
+      end
+    end
+
+    def peek(count=nil)
+      count ||= 0
+
+      if count >= @buffer.length
+        (@buffer.length - count).downto(0) do
+          @buffer.push(token)
+        end
       end
 
-      case @path[offset]
-        when ?/ then path_separator
-        when ?@ then at
-        when ?[ then lbrace
-        when ?] then rbrace
-        when ?' then string
-        when ?" then string
-        when ?0..?9 then number
-        else path_part
-        # raise YTools::PathError.new("Unrecognized character '#{path[offset].chr}' at offset #{offset} in '#{path}'")
-      end
+      @buffer[count]
     end
 
     private
-    def path_separator
-      tok = Token.new(path, offset, 1, :path_separator)
-      @offset += 1
-      tok
+    def token
+      return nil if offset >= path.length
+
+      case @path[offset]
+        when ?/ then path_separator
+        when ?[ then lbrace
+        when ?] then rbrace
+        when ?- then path_part
+        when ?0..?9 then number
+        else path_part
+      end
     end
 
-    def at
-      tok = Token.new(path, offset, 1, :at)
+    def path_separator
+      tok = Token.new(path, offset, 1, :path_separator)
       @offset += 1
       tok
     end
@@ -78,24 +84,6 @@ module YTools::YPath
       tok = Token.new(path, offset, 1, :rbrace)
       @offset += 1
       tok
-    end
-
-    def string
-      starting_character = path[offset]
-      @offset += 1
-      starting_offset = offset # Exclude the first ['|"] character
-
-      while path[offset] != starting_character && offset < path.length
-        @offset += 1
-      end
-
-      if offset == path.length
-        raise YTools::PathError.new("The string starting at position #{starting_offset} was not closed correctly in '#{path}'")
-      end
-
-      @offset += 1 # Consume the trailing ['|"] character
-
-      Token.new(path, starting_offset, offset - starting_offset - 1, :string)
     end
 
     def number
@@ -125,7 +113,7 @@ module YTools::YPath
 
           lookahead = path[offset + 1]
           case lookahead
-          when ?[ , ?] , ?| , ?\ , ?@ , ?/
+          when ?[ , ?] , ?| , ?\ , ?/
             str << lookahead
             @offset += 2
           else
@@ -139,10 +127,10 @@ module YTools::YPath
             str << ?/
             @offset += 1
           else
-            return Token.new(str, starting_offset, offset - starting_offset, :path_part)
+            return path_or_number(str, starting_offset, offset - starting_offset)
           end
         when ?[ , ?] , ?@ then
-          return Token.new(str, starting_offset, offset - starting_offset, :path_part)
+          return path_or_number(str, starting_offset, offset - starting_offset)
         else 
           if !path[offset].nil?
             str << path[offset]
@@ -155,7 +143,20 @@ module YTools::YPath
         raise YTools::PathError.new("There was no closing bar '|' character in the path '#{path}'")
       end
 
-      return Token.new(str, starting_offset, offset - starting_offset, :path_part)
+      return path_or_number(str, starting_offset, offset - starting_offset)
+    end
+
+# FIXME: there's a bug in here somewhere about the offset for numbers/paths.
+
+    def path_or_number(str, start, length)
+      i = str.to_i
+      if i == 0
+        return Token.new(str, start, length, :path_part)
+      elsif i.to_s == str
+        return Token.new(str, 0, length, :number)
+      else
+        return Token.new(str, start, length, :path_part)
+      end
     end
   end # PathLexer  
 end

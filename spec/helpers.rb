@@ -8,10 +8,8 @@ def attempting_to(&block)
   lambda &block
 end
 
-module YTools
-  module YamlObjectHelper
-    def yo(hash)
-      YamlObject.new(hash, nil)
-    end
+module YamlObjectHelper
+  def yo(hash)
+    YTools::YamlObject.new(hash, nil)
   end
 end

@@ -7,7 +7,7 @@ require 'helpers'
 module YTools::Path
 
   describe "ChildSelector" do
-    include YTools::YamlObjectHelper
+    include YamlObjectHelper
 
     before :each do
       @obj = yo({'a' => {'b' => 'c', 'd' => 'e'}})
@@ -45,7 +45,7 @@ module YTools::Path
   end
 
   describe "IndexSelector" do
-    include YTools::YamlObjectHelper
+    include YamlObjectHelper
 
     before :each do
       @obj = yo({'a' => {'b' => [1,2,3,4,5], 'c' => ['x', ['y', 'z']]}})
@@ -71,7 +71,7 @@ module YTools::Path
   end
 
   describe "RootSelector" do
-    include YTools::YamlObjectHelper
+    include YamlObjectHelper
 
     before :each do
       @obj = yo({'a' => {'b' => [1,2,3,4,5], 'c' => ['x', ['y', 'z']]}})
@@ -84,7 +84,7 @@ module YTools::Path
   end
 
   describe "DescendantSelector" do
-    include YTools::YamlObjectHelper
+    include YamlObjectHelper
 
     it "should set the match property correctly" do
       DescendantSelector.new('b').match.should eql('b')

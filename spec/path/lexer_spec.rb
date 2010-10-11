@@ -1,6 +1,6 @@
 require 'ytools/path/lexer'
 
-module YTools::YPath
+module YTools::Path
 
   module PathHelper
     def lexer(path)
@@ -39,18 +39,10 @@ module YTools::YPath
   describe "Lexer" do
     include PathHelper
 
-    it "should fail when the path doesn't start with a '/'" do
-      attempting { lexer('no path') }.should raise_error(YTools::PathError, /start with a '\/'/)
-    end
-
     it "should be able to parse a simple path separator" do
       tok = check_token('/', :path_separator, 0)
       tok.offset.should eql(0)
       tok.length.should eql(1)
-    end
-
-    it "should be able to parse an '@' character" do
-      check_token('/@', :at)
     end
 
     it "should be able to parse a '[' character" do
@@ -61,25 +53,9 @@ module YTools::YPath
       check_token('/]', :rbrace)
     end
 
-    it "should be able to parse a string in single quotes correctly" do
-      check_token("/'this is a string'", :string)
-    end
-
-    it "should fail when a string is not closed" do
-      attempting_to { check_token("/'this", :string) }.should raise_error(YTools::PathError, /closed correctly/)
-    end
-
-    it "should correctly determine the length of the string" do
-      tok = check_token("/'this'", :string)
-      tok.length.should eql(4)
-    end
-
-    it "should correctly parse a single quoted string" do
-      check_token('/"this"', :string)
-    end
-
     it "should correctly parse a number" do
-      check_token('/42', :number)
+      tok = check_token('/42', :number)
+      tok.value.should eql(42)
     end
 
     it "should know the position of the number" do
@@ -112,7 +88,7 @@ module YTools::YPath
     end
 
     it "should handle the basic backslash escape of special characters" do
-      check_path("/bath\\@here", 'bath@here')
+      check_path("/bath\\|here", 'bath|here')
     end
 
     it "should fail when a backslash character is unescaped" do
@@ -129,6 +105,23 @@ module YTools::YPath
 
     it "should be able to parse numbers within and at the end of path parts" do
       check_path('/to2be42', 'to2be42')
+    end
+
+    it "should handle negative numbers" do
+      tok = check_token('/-42', :number)
+      tok.offset.should eql(0)
+      tok.value.should eql(-42)
+    end
+
+    it "should be able to peek into the token stream" do
+      lex = lexer('/this/that/other')
+      lex.peek.type.should eql(:path_separator)
+      lex.peek(1).value.should eql("this")
+      lex.peek(2).type.should eql(:path_separator)
+
+      lex.next.type.should eql(:path_separator)
+      lex.next.value.should eql("this")
+      lex.next.type.should eql(:path_separator)
     end
   end
 end
