@@ -54,6 +54,10 @@ module YTools::Path
       @buffer[count]
     end
 
+    def has_next?
+      !peek.nil?
+    end
+
     private
     def token
       return nil if offset >= path.length

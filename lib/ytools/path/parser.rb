@@ -8,8 +8,8 @@ Yaml Path Spec:
 ---------------
 
 yaml_path:
-    path_node (child_selector)*
-  | child_selector+
+    child_selector (child_selector)* <-- '/' path_node is a root
+  | path_node (child_selector)*
   ;
 
 child_selector:
@@ -23,7 +23,7 @@ path_node:
   ;
 
 index:
-    LBRACE number RBRACE
+    LBRACE NUMBER RBRACE
   ;
 
 =end
@@ -45,56 +45,55 @@ index:
     end
 
     def parse!
-      tok = @lexer.peek
       selector = nil
 
-      while tok != nil
-        if selector.nil?
-          selector = read_root
-          tok = @lexer.peek
-        end
+      if @lexer.has_next?
+        selector = root_selector
+      end
 
-        if !tok.nil? && tok.type != :path_separator
-          raise ParseError("Unrecognized path separator, expected '/': #{tok.value}", tok)
-        end
-
-        path_selector
+      while @lexer.has_next?
+        selector.chain(child_selector)
       end
 
       selector
     end
 
     private
-    def read_root
-      puts @lexer.peek(1)
+    def root_selector
       if @lexer.peek.type == :path_separator
-        next_slash = @lexer.peek(1)
-
-        if !next_slash.nil? && next_slash.type == :path_separator
-          path_selector
+        subselector = child_selector
+        if subselector.is_a?(ChildSelector)
+          RootSelector.new.chain(subselector)
         else
-          root = RootSelector.new
-          p = path_selector
-          root.chain(p)
-          root
+          subselector
         end
       else
-        path_node
+        path_node(false)
       end
     end
 
-    def path_selector
+    def child_selector
       slash = @lexer.next
 
+      if slash.nil? || slash.type != :path_separator
+        raise ParseError.new("Missing a path separator '/'", slash)
+      end
+
+      if @lexer.peek.nil?
+        raise ParseError.new("Unfinished child path expression", slash)
+      end
+
       if @lexer.peek.type == :path_separator
+        @lexer.next # Pop off the separator
         path_node(true)
       else
-        path_node
+        path_node(false)
       end
     end
 
     def path_node(descendant=nil)
       node = @lexer.next
+
       if node.type != :number && node.type != :path_part
         raise ParseError.new("Unexpected path node type, number or string only", node)
       end
@@ -106,13 +105,13 @@ index:
             end
 
       if !@lexer.peek.nil? && @lexer.peek.type == :lbrace
-        sel.chain(index)
+        sel.chain(index_selector)
       end
 
       sel
     end
 
-    def index
+    def index_selector
       lbrace = @lexer.next
 
       number = @lexer.next

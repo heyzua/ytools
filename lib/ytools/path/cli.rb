@@ -96,7 +96,7 @@ EOF
         raise YTools::ConfigurationError.new("No YAML files given as arguments")
       end
 
-      if options[:string]
+      if options[:strict]
         args.each do |arg|
           if !File.exists?(arg)
             raise YTools::ConfigurationError.new("Non-existant YAML file: #{arg}")

@@ -13,6 +13,7 @@ module YTools::Path
       else
         @subselector.chain(selector)
       end
+      self
     end
 
     def chained?

@@ -30,8 +30,8 @@ The path expression have a particular syntax:
   would access the 2nd array value 'of values' with the 
   expression '/this[1]'
 
-- If you want all of the values in a list, each value on a
-  separate line,
+- If you want all of the values in a list or in a collection 
+  of descendants, each value on a separate line,
      ---
      this:
         - name: joe
@@ -39,7 +39,7 @@ The path expression have a particular syntax:
         - name: jack
           age: 10
      ---
-  would access all of ages could be accessed by '/this[]/age'
+  would access all of ages could be accessed by '/this//age'
   and would return:
 
      32
@@ -56,17 +56,7 @@ The path expression have a particular syntax:
         host3:
            value: blam
      ---
-  you would access 'host[1-3]' with the expression '/this@'.
-
-- If you have non-standard keys in any way, you can wrap them,
-  so, more complicated formats like
-     ---
-     this is a complex:
-        'and@!pretty':
-           'funky!': system of government
-     ---
-  You would access the 'system of government' value in the 
-  document with '/@['this is a complex']/@['and@!pretty']/@['funky!']'
+  you would access 'host[1-3]' with the expression '/this'.
   
 Caveats
 -------
