@@ -1,7 +1,7 @@
 require 'optparse'
-require 'yaml'
 require 'ytools/version'
 require 'ytools/errors'
+require 'ytools/path/executor'
 
 module YTools::Path
 
@@ -18,7 +18,13 @@ module YTools::Path
         parse(sargs)
         validate(sargs)
 
-        
+        executor = Executor.new(options[:path], sargs)
+
+        if options[:debug]
+          STDERR.puts executor.yaml_object
+        end
+
+        puts executor.process!
       rescue SystemExit => e
         raise
       rescue YTools::ConfigurationError => e
@@ -51,17 +57,20 @@ Options:
 EOF
 
         opts.on('-p', '--path PATTERN',
-                "The pattern to use to access the configuration.") do |p|
+                "The pattern to use to access the",
+                "configuration.") do |p|
           options[:path] = p
         end
         opts.on('-s', '--strict',
-                "Checks to make sure all of the YAML files exist before proceeding.") do |s|
+                "Checks to make sure all of the YAML files",
+                "exist before proceeding.") do |s|
           options[:strict] = true
         end
         opts.separator ""
         
         opts.on('-e', '--examples',
-                "Show some examples on how to use the path syntax.") do
+                "Show some examples on how to use the",
+                "path syntax.") do
           dir = File.dirname(__FILE__)
           examples = File.join(dir, 'examples.txt')
           File.open(examples, 'r') do |f|
@@ -77,7 +86,8 @@ EOF
           exit 0
         end
         opts.on('-d', '--debug',
-                     "Prints out the merged yaml as a ruby object to STDERR.") do |d|
+                "Prints out the merged yaml as a",
+                "ruby object to STDERR.") do |d|
           options[:debug] = true
         end
         opts.on('-h', '--help',

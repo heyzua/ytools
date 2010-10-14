@@ -101,7 +101,23 @@ module YTools::Path
       ms = DescendantSelector.new('b')
       o = yo({'a' => {'b' => 'c'}, 'b' => [{'x' => 'y', 'b' => 'd'}, {'b' => 'q'}]})
       
-      ms.select(o).length.should eql(4)
+      found = ms.select(o)
+      found.length.should eql(4)
+      found[0].should eql('c')
+      found[1].should be_a(Array)
+      found[2].should eql('d')
+      found[3].should eql('q')
+    end
+
+    it "should be able to cull specific subselectors" do
+      ms = DescendantSelector.new('c')
+      ms.chain(IndexSelector.new(1))
+      o = yo({'a' => {'b' => {'c' => [1, 2, 3]}}, 'c' => ['a', 'b', 'c']})
+
+      found = ms.select(o)
+      found.length.should eql(2)
+      found[0].should eql(2)
+      found[1].should eql('b')
     end
   end
 end

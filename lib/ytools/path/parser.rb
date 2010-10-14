@@ -1,5 +1,6 @@
 require 'ytools/errors'
 require 'ytools/path/lexer'
+require 'ytools/path/selectors'
 
 module YTools::Path
 

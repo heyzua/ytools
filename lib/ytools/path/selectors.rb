@@ -29,7 +29,7 @@ module YTools::Path
     end
 
     def select(yaml)
-      if yaml.hash.has_key?(child)
+      if yaml.yhash.has_key?(child)
         value = yaml[child]
         if chained?
           subselector.select(value)
@@ -91,21 +91,26 @@ module YTools::Path
 
     private
     def inner_select(yaml, results)
-      yaml.hash.each do |key, value|
+      yaml.yhash.each do |key, value|
         if key == match
           key_select(value, results)
         end
         value_select(value, results)
       end
-      results
+      
+      if results.length == 1
+        results[0]
+      else
+        results
+      end
     end
 
     def key_select(value, results)
       # Filter through the chain, if present
       if chained?
-        nvalue = chained.select(value)
+        nvalue = subselector.select(value)
         if !nvalue.nil?
-          results << value
+          results << nvalue
         end
       else
         results << value
