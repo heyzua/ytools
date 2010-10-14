@@ -62,7 +62,7 @@ values like:
         </database>
     </settings>
 
-Using <pre>ytemplates</pre>, you could then generate a different environment
+Using ytemplates, you could then generate a different environment
 file from each yaml file, but only have to manage one actual configuration file.
 Obviously, this becomes much more useful when the number of environments grows
 and the number of changes in the configuration files goes down relative to file's
