@@ -1,0 +1,52 @@
+Assuming a YAML file like the following:
+
+---
+this:
+    is: 
+        - a
+        - very
+        - simple
+    yaml: file
+    but: It's
+    pretty:
+        easy: 42
+        to-read: 'right?'
+---
+
+You can then create a template to access these values:
+
+---
+You can write out <%= this.is[0] %> simple template
+<%= this.yaml %> that uses the YAML as its bound object.
+It's fairly straight forward, <%= this.pretty['to-read']%>
+---
+
+It would output:
+
+---
+You can write out a simple template
+file that uses the YAML as its bound object.
+It's fairly straight forward, right?
+---
+
+You can, of course use all of the syntax available
+in a regular ERB template so you could do something 
+like:
+
+---
+<% 0.upto(this.pretty.easy) do |i| %>
+   <% if i == 42 %>
+      The secret of the universe is <%= i %>!
+      <%= this.but %> <%= this.is[2] %> <%= this.is[3] %>
+      <%= this.pretty['to-read'] %>
+   <% end %>
+<% end %>
+---
+
+That would output:
+
+---
+The secret of the universe is 42!
+It's very simple
+right?
+---
