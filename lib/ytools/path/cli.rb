@@ -14,7 +14,8 @@ module YTools::Path
           STDERR.puts executor.yaml_object
         end
 
-        puts executor.process!
+        output = executor.process!
+        puts output if !output.empty?
       rescue YTools::Path::ParseError => e
         print_path_error(e)
       end
