@@ -1,4 +1,3 @@
-require 'yaml'
 require 'ytools/yaml_object'
 require 'ytools/path/parser'
 
@@ -9,7 +8,7 @@ module YTools::Path
 
     def initialize(path, files)
       @path = path
-      @yaml_object = retrieve_yaml(files)
+      @yaml_object = YTools::YamlObject.from_files(files)
     end
 
     def process!
@@ -27,18 +26,6 @@ module YTools::Path
     end
 
     private
-    def retrieve_yaml(files)
-      yo = YTools::YamlObject.new
-      files.each do |file|
-        if File.exists?(file)
-          contents = nil
-          File.open(file, 'r') { |f| contents = f.read}
-          yo.merge(YAML::load(contents))
-        end
-      end
-      yo
-    end
-
     def show_yaml_object(found)
       output = ""
       first = true

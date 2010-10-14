@@ -1,6 +1,19 @@
+require 'yaml'
 
 module YTools
   class YamlObject
+    def self.from_files(files)
+      yo = YTools::YamlObject.new
+      files.each do |file|
+        if File.exists?(file)
+          contents = nil
+          File.open(file, 'r') { |f| contents = f.read}
+          yo.merge(YAML::load(contents))
+        end
+      end
+      yo
+    end
+
     attr_reader :ypath, :yroot, :yhash
 
     def initialize(hash=nil, root=nil, ypath=nil)

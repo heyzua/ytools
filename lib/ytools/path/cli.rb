@@ -1,23 +1,13 @@
 require 'optparse'
-require 'ytools/version'
+require 'ytools/basecli'
 require 'ytools/errors'
 require 'ytools/path/executor'
 
 module YTools::Path
-
-  class CLI
-    attr_reader :options, :args
-
-    def initialize(args)
-      @args = args
-    end
-
-    def execute!
+  class CLI < YTools::BaseCLI
+    protected 
+    def execute(sargs)
       begin
-        sargs = args.dup
-        parse(sargs)
-        validate(sargs)
-
         executor = Executor.new(options[:path], sargs)
 
         if options[:debug]
@@ -25,23 +15,13 @@ module YTools::Path
         end
 
         puts executor.process!
-      rescue SystemExit => e
-        raise
-      rescue YTools::ConfigurationError => e
-        print_error(e.message)
-      rescue OptionParser::InvalidOption => e
-        print_error(e.message)
       rescue YTools::Path::ParseError => e
         print_path_error(e)
-      rescue Exception => e
-        STDERR.puts e.backtrace
-        print_error(e.message)
       end
     end
 
     def parse(args)
-      @options ||= {}
-      @option_parser ||= OptionParser.new do |opts| 
+      OptionParser.new do |opts| 
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] YAML_FILES"
         opts.separator <<EOF
 Description:
@@ -73,19 +53,11 @@ EOF
         opts.on('-e', '--examples',
                 "Show some examples on how to use the",
                 "path syntax.") do
-          dir = File.dirname(__FILE__)
-          examples = File.join(dir, 'examples.txt')
-          File.open(examples, 'r') do |f|
-            f.each_line do |line|
-              puts line
-            end
-          end
-          exit 0
+          print_examples(File.dirname(__FILE__))
         end
         opts.on('-v', '--version',
                 "Show the version information") do |v|
-          puts "#{File.basename($0)} version: #{CTool::Version.to_s}"
-          exit 0
+          print_version
         end
         opts.on('-d', '--debug',
                 "Prints out the merged yaml as a",
@@ -117,7 +89,6 @@ EOF
       end
     end
 
-    private
     def print_path_error(e)
       STDERR.puts "ERROR: Path error: #{e.token.path}"
       spacer = "ERROR:             "
@@ -127,12 +98,6 @@ EOF
       spacer << "^"
       STDERR.puts spacer
       print_error("Path expression parsing error - #{e.message}")
-    end
-
-    def print_error(e)
-      STDERR.puts "ERROR: #{File.basename($0)}: #{e}"
-      STDERR.puts "ERROR: #{File.basename($0)}: Try '--help' for more information"
-      exit 1
     end
   end # CLI
 end

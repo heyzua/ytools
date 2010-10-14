@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 
-require 'ytools/template/cli'
-YTools::Template::CLI.new(ARGV).execute!
+require 'ytools/templates/cli'
+YTools::Templates::CLI.new(ARGV).execute!
