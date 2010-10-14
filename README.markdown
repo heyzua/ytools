@@ -1,11 +1,37 @@
 # YTools
 
-These are a couple of YAML-based tools for working with configuration files.  The first, 
-<pre>ypath</pre>, can be used to pull values from a YAML configuration and print
+These are a couple of YAML-based tools for working with configuration files.
+
+### YPath
+
+The first tool, ypath, be used to pull values from a YAML configuration and print
 them to STDOUT.  It's quite useful if you need to use the YAML as a configuration
 and only pull out individual values for your other scripts to use.
 
-The second, <pre>ytemplates</pre>, can be used to generate configuration files
+Say you have a YAML configuration file like:
+
+    project:
+        name: C.proj
+        dependencies:
+            - A.proj
+            - B.proj
+
+You could then pull out the project name 'C.proj' by running
+
+    ytools -p /project/name YAML_FILE
+
+You could even list all of the dependencies by running
+
+    ytools -p /project/dependencies YAML_FILE
+
+which would print
+ 
+    A.proj
+    B.proj
+
+### YTemplates
+
+The second tool, ytemplates, be used to generate configuration files
 that use YAML files as the backing object binding.  A simple use case might
 be that you need a configuration file generated for an environment, and you
 can break out the environment-specific values into different YAML files.
@@ -42,7 +68,7 @@ Obviously, this becomes much more useful when the number of environments grows
 and the number of changes in the configuration files goes down relative to file's
 size.
 
-# Downloading
+## Downloading
 
 You can download the gem using
 
