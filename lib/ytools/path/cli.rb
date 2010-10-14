@@ -31,6 +31,8 @@ module YTools::Path
         print_error(e.message)
       rescue OptionParser::InvalidOption => e
         print_error(e.message)
+      rescue YTools::Path::ParseError => e
+        print_path_error(e)
       rescue Exception => e
         STDERR.puts e.backtrace
         print_error(e.message)
@@ -116,6 +118,17 @@ EOF
     end
 
     private
+    def print_path_error(e)
+      STDERR.puts "ERROR: Path error: #{e.token.path}"
+      spacer = "ERROR:             "
+      e.token.offset.downto(1) do 
+        spacer << " "
+      end
+      spacer << "^"
+      STDERR.puts spacer
+      print_error("Path expression parsing error - #{e.message}")
+    end
+
     def print_error(e)
       STDERR.puts "ERROR: #{File.basename($0)}: #{e}"
       STDERR.puts "ERROR: #{File.basename($0)}: Try '--help' for more information"
