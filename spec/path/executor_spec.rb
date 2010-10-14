@@ -41,5 +41,9 @@ module YTools::Path
     it "should be able to pull out the keys for a hash" do
       process('/a', '5.yml').should eql("b\nc\nd")
     end
+
+    it "should be able to pull out a descendant selector with inner hashes" do
+      process('/a//b', '6.yml').should eql("c\nd\ne")
+    end
   end
 end

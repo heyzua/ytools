@@ -119,5 +119,16 @@ module YTools::Path
       found[0].should eql(2)
       found[1].should eql('b')
     end
+
+    it "should be able to pull out a list of subselectors" do
+      sel = ChildSelector.new('path')
+      sel.chain(DescendantSelector.new('subgroup'))
+      o = yo({'path' => [{'subgroup' => 'a', 'c' => 'd'}, {'subgroup' => 'b', 'c' => 'd'}]})
+
+      found = sel.select(o)
+      found.length.should eql(2)
+      found[0].should eql('a')
+      found[1].should eql('b')
+    end
   end
 end

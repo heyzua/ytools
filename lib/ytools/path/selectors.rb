@@ -85,23 +85,33 @@ module YTools::Path
       @match = match
     end
 
-    def select(yaml)
-      inner_select(yaml, [])
-    end
-
-    private
-    def inner_select(yaml, results)
-      yaml.yhash.each do |key, value|
-        if key == match
-          key_select(value, results)
-        end
-        value_select(value, results)
-      end
-      
+    def select(element)
+      results = []
+      element_select(element, results)
       if results.length == 1
         results[0]
       else
         results
+      end
+    end
+
+    private
+    def element_select(element, results)
+      if element.is_a?(YTools::YamlObject)
+        hash_select(element, results)
+      elsif element.is_a?(Array)
+        element.each do |e|
+          element_select(e, results)
+        end
+      end
+    end
+
+    def hash_select(yaml, results)
+      yaml.yhash.each do |key, value|
+        if key == match
+          key_select(value, results)
+        end
+        element_select(value, results)
       end
     end
 
@@ -114,18 +124,6 @@ module YTools::Path
         end
       else
         results << value
-      end
-    end
-
-    def value_select(value, results)
-      if value.is_a?(YTools::YamlObject)
-        inner_select(value, results)
-      elsif value.is_a?(Array)
-        value.each do |v|
-          if v.is_a?(YTools::YamlObject)
-            inner_select(v, results)
-          end
-        end
       end
     end
   end
