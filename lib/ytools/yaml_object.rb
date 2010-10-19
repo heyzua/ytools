@@ -92,7 +92,7 @@ module YTools
         
         if original_value.is_a?(YamlObject) && value.is_a?(Hash)
           original_value.merge(value)
-        elsif !value.is_nil?
+        elsif !value.nil?
           @yhash[key] = hashify(value, "#{relative_ypath}/#{child_path}")
         end
       end
