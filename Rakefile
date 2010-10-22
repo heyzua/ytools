@@ -5,7 +5,7 @@ require 'fileutils'
 require 'rake'
 require 'rubygems'
 require 'rspec/core/rake_task'
-require 'jabber-tee/version'
+require 'ytools/version'
 
 task :default => :spec
 
