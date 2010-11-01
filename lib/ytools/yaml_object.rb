@@ -102,7 +102,7 @@ module YTools
       if obj.is_a?(Hash)
         obj = YamlObject.new(obj, yroot, hash_path)
       elsif obj.is_a?(Array)
-        0.upto(obj.length - 1).each do |i|
+        0.upto(obj.length - 1) do |i|
           obj[i] = hashify(obj[i], "#{hash_path}[#{i}]")
         end
       end
