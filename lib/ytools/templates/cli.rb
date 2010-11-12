@@ -6,6 +6,26 @@ require 'ytools/templates/executor'
 module YTools::Templates
   class CLI < YTools::BaseCLI
     protected
+    def execute(args)
+      yaml_object = if args.length != 0
+                      YTools::YamlObject.from_files(args)
+                    else
+                      YTools::YamlObject.new
+                    end
+
+      if options[:literal]
+        yaml_object.merge(YAML::load(options[:literal]))
+      end
+
+      executor = Executor.new(options[:template], yaml_object)
+
+      if options[:debug]
+        STDERR.puts yaml_object
+      end
+      
+      executor.write!(options[:output])
+    end
+
     def parse(args)
       OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] YAML_FILES"
@@ -33,6 +53,11 @@ EOF
         opts.on('-t', '--template ERB',
                 "The ERB template file to use for generation") do |t|
           options[:template] = t
+        end
+        opts.on('-l', '--literal STRING',
+                "Evaluate a literal string in addition",
+                "to any file paths") do |l|
+          options[:literal] = l
         end
         opts.on('-o', '--output FILE',
                 "Write the generated output to a file instead",
@@ -82,7 +107,7 @@ EOF
         raise YTools::ConfigurationError.new("The output directory doesn't exist: #{option[:output]}")
       end
 
-      if args.length == 0
+      if args.length == 0 && options[:literal].nil?
         raise YTools::ConfigurationError.new("No YAML files were given")
       end
 
@@ -93,16 +118,6 @@ EOF
           end
         end
       end
-    end
-
-    def execute(args)
-      executor = Executor.new(options[:template], args)
-
-      if options[:debug]
-        STDERR.puts executor.yaml_object.to_s
-      end
-      
-      executor.write!(options[:output])
     end
   end
 end

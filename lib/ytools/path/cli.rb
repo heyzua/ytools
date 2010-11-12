@@ -2,16 +2,27 @@ require 'optparse'
 require 'ytools/basecli'
 require 'ytools/errors'
 require 'ytools/path/executor'
+require 'yaml'
 
 module YTools::Path
   class CLI < YTools::BaseCLI
     protected 
     def execute(sargs)
       begin
-        executor = Executor.new(options[:path], sargs)
+        yaml_object = if sargs.length != 0
+                        YTools::YamlObject.from_files(sargs)
+                      else
+                        YTools::YamlObject.new
+                      end
+
+        if options[:literal]
+          yaml_object.merge(YAML::load(options[:literal]))
+        end
+
+        executor = Executor.new(options[:path], yaml_object)
 
         if options[:debug]
-          STDERR.puts executor.yaml_object
+          STDERR.puts yaml_object
         end
 
         output = executor.process!
@@ -43,6 +54,11 @@ EOF
                 "The pattern to use to access the",
                 "configuration.") do |p|
           options[:path] = p
+        end
+        opts.on('-l', '--literal STRING',
+                "Evaluate a literal string in addition",
+                "to any file paths") do |l|
+          options[:literal] = l
         end
         opts.on('-s', '--strict',
                 "Checks to make sure all of the YAML files",
@@ -77,7 +93,7 @@ EOF
       if options[:path].nil?
         raise YTools::ConfigurationError.new("The path expression was empty.")
       end
-      if args.length == 0
+      if args.length == 0 && options[:literal].nil?
         raise YTools::ConfigurationError.new("No YAML files given as arguments")
       end
 

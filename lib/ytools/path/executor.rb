@@ -6,9 +6,9 @@ module YTools::Path
   class Executor
     attr_reader :path, :yaml_object
 
-    def initialize(path, files)
+    def initialize(path, yaml_object)
       @path = path
-      @yaml_object = YTools::YamlObject.from_files(files)
+      @yaml_object = yaml_object
     end
 
     def process!

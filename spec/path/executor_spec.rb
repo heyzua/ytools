@@ -1,5 +1,6 @@
 require 'helpers'
 require 'ytools/errors'
+require 'ytools/yaml_object'
 require 'ytools/path/executor'
 
 module YTools::Path
@@ -11,7 +12,8 @@ module YTools::Path
         real_files << File.join(File.dirname(__FILE__), 'yamls', file)
       end
 
-      Executor.new(path, real_files).process!
+      yaml_object = YTools::YamlObject.from_files(real_files)
+      Executor.new(path, yaml_object).process!
     end
   end
 

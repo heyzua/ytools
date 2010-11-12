@@ -6,9 +6,9 @@ module YTools::Templates
   class Executor
     attr_reader :template, :yaml_object
 
-    def initialize(template, files)
+    def initialize(template, yaml_object)
       @template = template
-      @yaml_object = YTools::YamlObject.from_files(files)
+      @yaml_object = yaml_object
     end
 
     def write!(outfile)
