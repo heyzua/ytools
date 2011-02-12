@@ -13,11 +13,16 @@ module YTools::Templates
                       YTools::YamlObject.new
                     end
 
+      template = options[:expression]
+      if template.nil?
+        File.open(template, 'r') { |f| template = f.read}
+      end
+      
       if options[:literal]
         yaml_object.merge(YAML::load(options[:literal]))
       end
 
-      executor = Executor.new(options[:template], yaml_object)
+      executor = Executor.new(template, yaml_object)
 
       if options[:debug]
         STDERR.puts yaml_object
@@ -54,6 +59,11 @@ EOF
                 "The ERB template file to use for generation") do |t|
           options[:template] = t
         end
+        opts.on('-e', '--expression EXPR',
+                "The ERB expression to use for generation",
+                "overrides --template") do |e|
+          options[:expression] = e
+        end
         opts.on('-l', '--literal STRING',
                 "Evaluate a literal string in addition",
                 "to any file paths") do |l|
@@ -71,7 +81,7 @@ EOF
         end
         opts.separator ""
         
-        opts.on('-e', '--examples',
+        opts.on('--examples',
                 "Show some examples on how to use the",
                 "path syntax.") do
           print_examples(File.dirname(__FILE__))
@@ -94,11 +104,11 @@ EOF
     end
 
     def validate(args)
-      if options[:template].nil?
-        raise YTools::ConfigurationError.new("No template file was indicated")
+      if options[:expression].nil? && options[:template].nil?
+        raise YTools::ConfigurationError.new("No template expression or file was indicated")
       end
 
-      if !File.exists?(options[:template])
+      if options[:expression].nil? && !File.exists?(options[:template])
         raise YTools::ConfigurationError.new("Unable to locate the template file: #{options[:template]}")
       end
 

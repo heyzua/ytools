@@ -27,8 +27,8 @@ begin
     gem.authors        = ['Gabe McArthur']
     gem.homepage       = 'http://github.com/gabemc/ytools'
     gem.files          = FileList["[A-Z]*", "{bin,lib,spec}/**/*"]
-    
-    gem.add_development_dependency 'rspec', '>=2.0.1'
+
+    gem.add_development_dependency 'rspec', '~> 2.5'
   end
 rescue LoadError
   puts "Jeweler or dependencies are not available.  Install it with: sudo gem install jeweler"
