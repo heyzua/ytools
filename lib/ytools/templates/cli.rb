@@ -15,7 +15,7 @@ module YTools::Templates
 
       template = options[:expression]
       if template.nil?
-        File.open(template, 'r') { |f| template = f.read}
+        File.open(options[:template], 'r') { |f| template = f.read}
       end
       
       if options[:literal]
