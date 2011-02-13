@@ -12,23 +12,27 @@ module YTools::Templates
                     else
                       YTools::YamlObject.new
                     end
-
-      template = options[:expression]
-      if template.nil?
-        File.open(options[:template], 'r') { |f| template = f.read}
-      end
-      
+            
       if options[:literal]
         yaml_object.merge(YAML::load(options[:literal]))
       end
 
-      executor = Executor.new(template, yaml_object)
+      executor = Executor.new(template_contents, yaml_object)
 
       if options[:debug]
         STDERR.puts yaml_object
       end
       
       executor.write!(options[:output])
+    end
+
+    def template_contents
+      template = options[:stdin] || options[:expression]
+      if template.nil?
+        File.open(options[:template], 'r') { |f| template = f.read}
+      end
+
+      template
     end
 
     def parse(args)
@@ -50,6 +54,9 @@ Description:
     keys conflict with ones listed earlier, override the earlier listed
     values.  If you pass in files that don't exist, no error will be 
     raised unless the '--strict' flag is passed.
+
+    Instead of supplying an expression via --expression or a template
+    via --template, you can also pipe in an expression via STDIN.
 
     Check out the '--examples' flag for more details.
 
@@ -104,11 +111,20 @@ EOF
     end
 
     def validate(args)
-      if options[:expression].nil? && options[:template].nil?
+      if RUBY_PLATFORM =~ /win/ && $stdin.stat.size > 0
+        options[:stdin] = STDIN.read
+      else
+        require 'fcntl'
+        if STDIN.fcntl(Fcntl::F_GETFL, 0) == 0
+          options[:stdin] = STDIN.read
+        end
+      end
+      
+      if options[:stdin].nil? && options[:expression].nil? && options[:template].nil?
         raise YTools::ConfigurationError.new("No template expression or file was indicated")
       end
 
-      if options[:expression].nil? && !File.exists?(options[:template])
+      if options[:stdin].nil? && options[:expression].nil? && !File.exists?(options[:template])
         raise YTools::ConfigurationError.new("Unable to locate the template file: #{options[:template]}")
       end
 
