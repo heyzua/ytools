@@ -10,10 +10,7 @@ require 'ytools/version'
 task :default => :spec
 
 desc "Run the RSpec tests"
-RSpec::Core::RakeTask.new do |t|
-  t.rspec_opts = ['-b', '-c', '-f', 'p']
-  t.fail_on_error = false
-end
+RSpec::Core::RakeTask.new
 
 begin
   require 'jeweler'
