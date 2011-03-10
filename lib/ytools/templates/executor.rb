@@ -23,10 +23,7 @@ module YTools::Templates
     end
 
     def write!(outfile)
-      tcontents = nil
-      File.open(template, 'r') { |f| tcontents = f.read}
-
-      generator = ERB.new(tcontents)
+      generator = ERB.new(template)
       output = generator.result(yaml_object.erb_binding)
 
       if outfile
