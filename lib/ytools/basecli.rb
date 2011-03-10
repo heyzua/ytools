@@ -1,67 +1,70 @@
-require 'optparse'
 require 'ytools/errors'
+require 'ytools/utils'
 require 'ytools/version'
 
 module YTools
-
   class BaseCLI
-    attr_reader :options, :args
-
     def initialize(args)
-      @args = args
-      @options = {}
+      @args = args.dup
     end
 
     def execute!
-      begin
-        sargs = args.dup
-        parse(sargs)
-        validate(sargs)
-        execute(sargs)
-      rescue SystemExit => e
-        raise
-      rescue YTools::ConfigurationError => e
-        print_error(e.message)
-      rescue OptionParser::InvalidOption => e
-        print_error(e.message)
-      rescue Exception => e
-        STDERR.puts e.backtrace
-        print_error(e.message)
-      end
+      tail(command).execute!(@args)
+    end
+
+    def parse(propagate=nil)
+      tail(command).parse!(@args, propagate)
+    end
+
+    def command
+      # overridden
     end
 
     protected
-    def parse(args)
-      # To override
-    end
+    def tail(command)
+      command.alter do
+        string :literal, "Evaluate a literal string in addition to any file paths."
+        boolean :strict, "Checks to make sure all of the YAML files exist before proceeding."
+        boolean :examples, "Show some examples on how to use the path syntax." do
+          validate do |show, options|
+            if show
+              YTools::Utils.print_example(File.join(File.dirname(__FILE__), command.name.to_s.gsub(/^y/, '')))
+            end
+          end
+        end
+        boolean_ :debug, "Prints out the merged YAML as a ruby object to STDERR."
+        version YTools::Version
+        help
+        
+        arguments do
+          metaname 'YAML_FILES'
+          count :at_least => 0
 
-    def validate(args)
-      # To override
-    end
+          validate do |files, options|
+            if files.length == 0 && options[:literal].nil? && !YTools::Utils.stdin?
+              die "no YAML files given as arguments"
+            end
 
-    def execute(args)
-      # To override
-    end
-
-    def print_version
-      puts "#{File.basename($0)} version: #{YTools::Version.to_s}"
-      exit 0
-    end
-
-    def print_examples(basedir)
-      examples = File.join(basedir, 'examples.txt')
-      File.open(examples, 'r') do |f|
-        f.each_line do |line|
-          puts line
+            begin
+              yaml_object = YTools::YamlObject.from_files(files, options[:strict])
+              if options[:literal]
+                yaml_object.merge(YAML::load(options[:literal]))
+              end
+              if YTools::Utils.stdin?
+                yaml_object.merge(YAML::load(STDIN.read))
+              end
+              options[:yaml_object] = yaml_object
+            rescue Exception => e
+              if options[:debug]
+                STDERR.puts e.stacktrace
+              end
+              die e.message
+            end
+          end
         end
       end
-      exit 0
-    end
 
-    def print_error(e)
-      STDERR.puts "ERROR: #{File.basename($0)}: #{e}"
-      STDERR.puts "ERROR: #{File.basename($0)}: Try '--help' for more information"
-      exit 1
+      command
     end
   end
 end

@@ -2,13 +2,15 @@ require 'yaml'
 
 module YTools
   class YamlObject
-    def self.from_files(files)
+    def self.from_files(files, strict=nil)
       yo = YTools::YamlObject.new
       files.each do |file|
         if File.exists?(file)
           contents = nil
           File.open(file, 'r') { |f| contents = f.read}
           yo.merge(YAML::load(contents))
+        elsif strict
+          raise YTools::PathError.new("non-existant YAML file: #{file}")
         end
       end
       yo
@@ -30,7 +32,12 @@ module YTools
       merge(@yhash)
     end
 
-    def merge(hash)
+    def merge(hash) 
+      return if hash.nil?
+      if !hash.is_a?(Hash)
+        raise YTools::PathError.new("malformed YAML:\n#{hash}")
+      end
+
       hash.each do |key, value|
         add_entry(key, value)
       end
@@ -41,7 +48,7 @@ module YTools
       hash_key = @methods[method_name]
 
       if hash_key.nil?
-        raise YTools::PathError.new("Unable to locate attribute '#{relative_ypath}/#{method_name}'")
+        raise YTools::PathError.new("unable to locate attribute: '#{relative_ypath}/#{method_name}'")
       else
         @yhash[hash_key]
       end
@@ -50,7 +57,7 @@ module YTools
     def [](key)
       value = @yhash[key]
       if value.nil?
-        raise YTools::PathError.new("Unable to locate key \"#{relative_ypath}@['#{key}']\"")
+        raise YTools::PathError.new("unable to locate key: \"#{relative_ypath}@['#{key}']\"")
       end
       value
     end

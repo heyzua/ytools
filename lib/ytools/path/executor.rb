@@ -2,20 +2,28 @@ require 'ytools/yaml_object'
 require 'ytools/path/parser'
 
 module YTools::Path
-
   class Executor
-    attr_reader :path, :yaml_object
+    attr_reader :selector, :yaml_object
 
-    def initialize(path, yaml_object)
-      @path = path
+    def initialize(path=nil, yaml_object=nil)
+      @selector = Parser.new(path).parse! if path
       @yaml_object = yaml_object
     end
 
-    def process!
-      parser = Parser.new(path)
-      selectors = parser.parse!
+    def execute!(yaml_files, options)
+      @yaml_object = options[:yaml_object]
 
-      found = selectors.select(yaml_object)
+      if options[:debug]
+        STDERR.puts @yaml_object.to_s
+      end
+
+      @selector = options[:selector]
+      output = process!
+      puts output if !output.empty?
+    end
+
+    def process!
+      found = @selector.select(yaml_object)
       if found.is_a?(YTools::YamlObject)
         show_yaml_object(found)
       elsif found.is_a?(Array)
@@ -53,6 +61,5 @@ module YTools::Path
       end
       output
     end
-
   end
 end
