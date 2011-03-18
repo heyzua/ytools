@@ -51,10 +51,7 @@ module YTools
                 yaml_object.merge(YAML::load(options[:literal]))
               end
               if YTools::Utils.stdin?
-                # We need to make sure there are no files that
-                # ARGF will try to read from
-                ARGV.clear
-                yaml_object.merge(YAML::load(ARGF.read))
+                yaml_object.merge(YAML::load(STDIN.read))
               end
               options[:yaml_object] = yaml_object
             rescue Exception => e
