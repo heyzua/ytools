@@ -33,6 +33,8 @@ module YTools::Path
             end
           end
         end
+
+        string :literal, "Evaluate a literal string in addition to any file paths."
       end
     end
   end # CLI

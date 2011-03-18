@@ -23,9 +23,8 @@ module YTools
     protected
     def tail(command)
       command.alter do
-        string :literal, "Evaluate a literal string in addition to any file paths."
         boolean :strict, "Checks to make sure all of the YAML files exist before proceeding."
-        boolean :examples, "Show some examples on how to use the path syntax." do
+        boolean_ :examples, "Show some examples on how to use the path syntax." do
           validate do |show, options|
             if show
               YTools::Utils.print_example(File.join(File.dirname(__FILE__), command.name.to_s.gsub(/^y/, '')))
