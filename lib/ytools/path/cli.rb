@@ -11,11 +11,11 @@ module YTools::Path
         printer :standard, :max_width => 80
         executor Executor.new
 
-        header 'Description:'
+        heading 'Description:'
         para "This tool uses a kind of XPath syntax for locating and printing elements from within YAML files.  Check out the '--examples' flag for details on the exact path syntax."
         para "It accepts multiple yaml files, and will merge their contents in the order in which they are given.  Thus, files listed later, if their keys conflict with ones listed earlier, override the earlier listed values.  If you pass in files that don't exist, no error will be  raised unless the '--strict' flag is passed."
 
-        header 'Option:'
+        heading 'Option:'
         string :path, "The YAML Path pattern syntax to run against the input." do
           required
           depends_on :examples
