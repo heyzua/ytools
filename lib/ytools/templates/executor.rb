@@ -12,7 +12,7 @@ module YTools::Templates
     end
 
     def execute!(yaml_files, options)
-      @template = options[:template]
+      @template = options[:erb]
       @yaml_object = options[:yaml_object]
 
       if options[:debug]
