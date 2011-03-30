@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 *.gem
-*.gemspec
 .bundle/
 *.swp
-=======
-*.gemspec
 *.gem
->>>>>>> c4e093be36663ea1a65baf89c88352926bf744f3

@@ -5,6 +5,7 @@ require 'rubygems'
 require 'fileutils'
 require 'rake'
 require 'rspec/core/rake_task'
+require 'choosy/version'
 require 'choosy/rake'
 
 task :default => :spec

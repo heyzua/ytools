@@ -27,7 +27,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  ZenTest
   autotest
   autotest-notification
-  rspec (>= 2.5.0)
+  rspec
   ytools!
