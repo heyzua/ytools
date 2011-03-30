@@ -1,6 +1,6 @@
 require 'ytools/errors'
 require 'ytools/utils'
-require 'ytools/version'
+require 'choosy'
 
 module YTools
   class BaseCLI
@@ -33,7 +33,7 @@ module YTools
           end
         end
         boolean_ :debug, "Prints out the merged YAML as a ruby object to STDERR."
-        version YTools::Version
+        version Choosy::Version.new(File.join(File.dirname(__FILE__), '..', 'VERSION.yml'))
         help
         
         arguments do

@@ -1,6 +1,5 @@
 require 'optparse'
 require 'ytools/errors'
-require 'ytools/version'
 
 module YTools
   module Utils

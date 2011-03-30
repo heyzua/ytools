@@ -1,3 +1,9 @@
+PATH
+  remote: .
+  specs:
+    ytools (0.2.1)
+      choosy (>= 0.4.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -6,7 +12,7 @@ GEM
       ZenTest (>= 4.4.1)
     autotest-notification (2.3.1)
       autotest (~> 4.3)
-    choosy (0.2.5)
+    choosy (0.4.3)
     diff-lcs (1.1.2)
     rspec (2.5.0)
       rspec-core (~> 2.5.0)
@@ -23,5 +29,5 @@ PLATFORMS
 DEPENDENCIES
   autotest
   autotest-notification
-  choosy (~> 0.2.4)
-  rspec
+  rspec (>= 2.5.0)
+  ytools!
