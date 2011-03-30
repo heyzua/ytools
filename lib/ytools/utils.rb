@@ -17,7 +17,7 @@ module YTools
     def self.stdin?
       begin
         require 'fcntl'
-        STDIN.fcntl(Fcntl::F_GETFL, 0) == 0 && $stdin.tty?
+        STDIN.fcntl(Fcntl::F_GETFL, 0) == 0  && !$stdin.tty?
       rescue
         $stdin.stat.size != 0
       end
