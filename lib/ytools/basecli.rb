@@ -33,7 +33,7 @@ module YTools
           end
         end
         boolean_ :debug, "Prints out the merged YAML as a ruby object to STDERR."
-        version Choosy::Version.new(File.join(File.dirname(__FILE__), '..', 'VERSION.yml'))
+        version Choosy::Version.load_from_parent
         help
         
         arguments do

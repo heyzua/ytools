@@ -1,15 +1,18 @@
 # -*- encoding: utf-8 -*-
+require 'rubygems'
+require 'rake'
+
+version = '0'
 begin
-  require 'rubygems'
-  require 'choosy'
-  require 'rake'
-rescue LoadError
+  require 'choosy/version'
+  version = Choosy::Version.load_from_lib.to_s
+rescue Exception
   # Pass
 end
 
 Gem::Specification.new do |gem|
   gem.name           = 'ytools'
-  gem.version        = Choosy::Version.load(:file => __FILE__, :relpath => 'lib').to_s
+  gem.version        = version
   gem.platform       = Gem::Platform::RUBY
   gem.executables    = %W{ypath ytemplates}
   gem.summary        = 'For reading or writing configuration files using yaml.'
@@ -19,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.homepage       = 'http://github.com/gabemc/ytools'
   gem.files          = FileList["[A-Z]*", "{bin,lib,spec}/**/*"]
     
-  gem.add_dependency 'choosy', '>= 0.4.3'
+  gem.add_dependency 'choosy', '>= 0.4.4'
 
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'autotest'
