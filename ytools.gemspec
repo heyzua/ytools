@@ -2,17 +2,14 @@
 require 'rubygems'
 require 'rake'
 
-version = '0'
-begin
-  require 'choosy/version'
-  version = Choosy::Version.load_from_lib.to_s
-rescue Exception
-  # Pass
-end
-
 Gem::Specification.new do |gem|
   gem.name           = 'ytools'
-  gem.version        = version
+  gem.version        = begin
+                         require 'choosy/version'
+                         Choosy::Version.load_from_lib.to_s
+                       rescue
+                         '0'
+                       end
   gem.platform       = Gem::Platform::RUBY
   gem.executables    = %W{ypath ytemplates}
   gem.summary        = 'For reading or writing configuration files using yaml.'
