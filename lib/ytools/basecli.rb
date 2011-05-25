@@ -56,7 +56,7 @@ module YTools
               options[:yaml_object] = yaml_object
             rescue Exception => e
               if options[:debug]
-                STDERR.puts e.stacktrace
+                STDERR.puts e.backtrace
               end
               die e.message
             end
