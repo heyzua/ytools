@@ -13,12 +13,12 @@ module YTools
       exit 0
     end
 
-    def self.stdin?
+    def self.read_stdin
       begin
-        require 'fcntl'
-        STDIN.fcntl(Fcntl::F_GETFL, 0) == 0  && !$stdin.tty?
-      rescue
-        $stdin.stat.size != 0
+        input = $stdin.read_nonblock(1)
+        input << $stdin.read
+      rescue Exception => e
+        nil
       end
     end
   end
