@@ -22,7 +22,7 @@ Gem::Specification.new do |gem|
   gem.homepage       = 'http://github.com/gabemc/ytools'
   gem.files          = FileList["[A-Z]*", "{bin,lib,spec}/**/*"]
     
-  gem.add_dependency 'choosy', '>= 0.4.4'
+  gem.add_dependency 'choosy', '>= 0.4.9'
 
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'autotest'

@@ -41,7 +41,8 @@ module YTools
           count :at_least => 0
 
           validate do |files, options|
-            if files.length == 0 && options[:literal].nil? && !YTools::Utils.stdin?
+            stdin = YTools::Utils.read_stdin
+            if files.length == 0 && options[:literal].nil? && stdin.nil?
               die "no YAML files given as arguments"
             end
 
@@ -50,8 +51,8 @@ module YTools
               if options[:literal]
                 yaml_object.merge(YAML::load(options[:literal]))
               end
-              if YTools::Utils.stdin?
-                yaml_object.merge(YAML::load(STDIN.read))
+              if stdin
+                yaml_object.merge(YAML::load(stdin))
               end
               options[:yaml_object] = yaml_object
             rescue Exception => e

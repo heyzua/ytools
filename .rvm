@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 rvm use 1.9.2
 rvm gemset create ytools
 rvm use 1.9.2@ytools
 
+=======
+rvm use 1.8.7
+rvm gemset create ytools
+rvm use 1.8.7@ytools
+>>>>>>> 71050d76b3af8beefe3e94b7917a5b6a670f960c
